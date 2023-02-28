@@ -12,8 +12,6 @@ import java.util.stream.IntStream;
  * @invar | getRows() != null
  * @invar | getRows().length == getRowCount()
  * @invar | Arrays.stream(getRows()).allMatch(row -> row != null && row.length == getColumnCount())
- * 
- * @immutable
  */
 public class Matrix {
 	
@@ -87,48 +85,41 @@ public class Matrix {
 	}
 	
 	/**
-	 * @inspects | this
-	 * @post | result != null
-	 * @post | result.getRowCount() == getRowCount()
-	 * @post | result.getColumnCount() == getColumnCount()
+	 * @mutates | this
+	 * @post | getRowCount() == old(getRowCount())
+	 * @post | getColumnCount() == old(getColumnCount())
 	 * @post | IntStream.range(0, getRowCount()).allMatch(i ->
 	 *       |     IntStream.range(0, getColumnCount()).allMatch(j ->
-	 *       |         result.getElementAt(i, j) == getElementAt(i, j) * factor
+	 *       |         getElementAt(i, j) == old(getRows())[i][j] * factor
 	 *       |     )
 	 *       | )
-	 * @creates | result
 	 */
-	public Matrix scaled(double factor) {
-		double[] newElementsRowMajor = new double[rowCount * columnCount];
+	public void scale(double factor) {
 		for (int i = 0; i < rowCount; i++)
 			for (int j = 0; j < columnCount; j++)
-				newElementsRowMajor[i * columnCount + j] = elementsRowMajor[i * columnCount + j] * factor;
-		return new Matrix(rowCount, columnCount, newElementsRowMajor);
+				elementsRowMajor[i * columnCount + j] = elementsRowMajor[i * columnCount + j] * factor;
 	}
 
 	/**
 	 * @pre | other != null
 	 * @pre | other.getRowCount() == getRowCount()
 	 * @pre | other.getColumnCount() == getColumnCount()
-	 * @inspects | this, other
-	 * @post | result != null
-	 * @post | result.getRowCount() == getRowCount()
-	 * @post | result.getColumnCount() == getColumnCount()
+	 * @mutates | this
+	 * @inspects | other
+	 * @post | getRowCount() == old(getRowCount())
+	 * @post | getColumnCount() == old(getColumnCount())
 	 * @post | IntStream.range(0, getRowCount()).allMatch(i ->
 	 *       |     IntStream.range(0, getColumnCount()).allMatch(j ->
-	 *       |         result.getElementAt(i, j) == getElementAt(i, j) + other.getElementAt(i, j)
+	 *       |         getElementAt(i, j) == old(getRows())[i][j] + other.getElementAt(i, j)
 	 *       |     )
 	 *       | )
-	 * @creates | result
 	 */
-	public Matrix plus(Matrix other) {
+	public void add(Matrix other) {
 		double[] otherElementsRowMajor = other.getElementsRowMajor();
-		double[] newElementsRowMajor = new double[rowCount * columnCount];
 		for (int i = 0; i < rowCount; i++)
 			for (int j = 0; j < columnCount; j++)
-				newElementsRowMajor[i * columnCount + j] =
+				elementsRowMajor[i * columnCount + j] =
 					elementsRowMajor[i * columnCount + j] + otherElementsRowMajor[i * columnCount + j];
-		return new Matrix(rowCount, columnCount, newElementsRowMajor);
 	}
 	
 	/**

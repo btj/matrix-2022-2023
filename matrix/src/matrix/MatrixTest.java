@@ -22,20 +22,22 @@ class MatrixTest {
 		}, matrix.getRows()));
 		assertEquals(60, matrix.getElementAt(1, 2));
 		
+		matrix.scale(10);
 		assertArrayEquals(new double[] {100, 200, 300, 400, 500, 600},
-				matrix.scaled(10).getElementsRowMajor());
+				matrix.getElementsRowMajor());
 		
 		Matrix andereMatrix = new Matrix(2, 3, new double[] {1, 2, 3, 4, 5, 6});
-		assertArrayEquals(new double[] {11, 22, 33, 44, 55, 66},
-				matrix.plus(andereMatrix).getElementsRowMajor());
+		matrix.add(andereMatrix);
+		assertArrayEquals(new double[] {101, 202, 303, 404, 505, 606},
+				matrix.getElementsRowMajor());
 		
 		double[] elems = matrix.getElementsRowMajor();
 		elems[0] = 0;
-		assertEquals(10, matrix.getElementAt(0, 0)); // Checks for representation exposure
+		assertEquals(101, matrix.getElementAt(0, 0)); // Checks for representation exposure
 		
 		elems = matrix.getElementsColumnMajor();
 		elems[0] = 0;
-		assertEquals(10, matrix.getElementAt(0, 0)); // Checks for representation exposure
+		assertEquals(101, matrix.getElementAt(0, 0)); // Checks for representation exposure
 	}
 
 }
