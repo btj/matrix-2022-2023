@@ -18,15 +18,17 @@ public class Matrix {
 	/**
 	 * @invar | 0 <= rowCount
 	 * @invar | 0 <= columnCount
-	 * @invar | elementsRowMajor != null
-	 * @invar | elementsRowMajor.length == rowCount * columnCount
+	 * @invar | rows != null
+	 * @invar | rows.length == rowCount
+	 * @invar | Arrays.stream(rows).allMatch(row -> row != null && row.length == columnCount)
 	 */
 	private int rowCount;
 	private int columnCount;
 	/**
 	 * @representationObject
+	 * @representationObjects
 	 */
-	private double[] elementsRowMajor;
+	private double[][] rows;
 	
 	public int getRowCount() { return rowCount; }
 	
@@ -39,7 +41,7 @@ public class Matrix {
 		double[][] result = new double[rowCount][columnCount];
 		for (int i = 0; i < rowCount; i++)
 			for (int j = 0; j < columnCount; j++)
-				result[i][j] = elementsRowMajor[i * columnCount + j];
+				result[i][j] = rows[i][j];
 		return result;
 	}
 	
@@ -49,7 +51,7 @@ public class Matrix {
 	 * @post | result == getRows()[rowIndex][columnIndex]
 	 */
 	public double getElementAt(int rowIndex, int columnIndex) {
-		return elementsRowMajor[rowIndex * columnCount + columnIndex];
+		return rows[rowIndex][columnIndex];
 	}
 	
 	/**
@@ -63,7 +65,11 @@ public class Matrix {
 	 * @creates | result
 	 */
 	public double[] getElementsRowMajor() {
-		return elementsRowMajor.clone(); // Vermijd representation exposure!!
+		double[] result = new double[rowCount * columnCount];
+		for (int i = 0; i < rowCount; i++)
+			for (int j = 0; j < columnCount; j++)
+				result[i * columnCount + j] = rows[i][j];
+		return result;
 	}
 	
 	/**
@@ -80,7 +86,7 @@ public class Matrix {
 		double[] result = new double[rowCount * columnCount];
 		for (int i = 0; i < rowCount; i++)
 			for (int j = 0; j < columnCount; j++)
-				result[j * rowCount + i] = elementsRowMajor[i * columnCount + j];
+				result[j * rowCount + i] = rows[i][j];
 		return result;
 	}
 	
@@ -97,7 +103,7 @@ public class Matrix {
 	public void scale(double factor) {
 		for (int i = 0; i < rowCount; i++)
 			for (int j = 0; j < columnCount; j++)
-				elementsRowMajor[i * columnCount + j] = elementsRowMajor[i * columnCount + j] * factor;
+				rows[i][j] *= factor;
 	}
 
 	/**
@@ -118,8 +124,7 @@ public class Matrix {
 		double[] otherElementsRowMajor = other.getElementsRowMajor();
 		for (int i = 0; i < rowCount; i++)
 			for (int j = 0; j < columnCount; j++)
-				elementsRowMajor[i * columnCount + j] =
-					elementsRowMajor[i * columnCount + j] + otherElementsRowMajor[i * columnCount + j];
+				rows[i][j] += otherElementsRowMajor[i * columnCount + j];
 	}
 	
 	/**
@@ -135,6 +140,9 @@ public class Matrix {
 	public Matrix(int rowCount, int columnCount, double[] elementsRowMajor) {
 		this.rowCount = rowCount;
 		this.columnCount = columnCount;
-		this.elementsRowMajor = elementsRowMajor.clone(); // Vermijd representation exposure!
+		rows = new double[rowCount][columnCount];
+		for (int i = 0; i < rowCount; i++)
+			for (int j = 0; j < columnCount; j++)
+				rows[i][j] = elementsRowMajor[i * columnCount + j];
 	}
 }
